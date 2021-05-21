@@ -12,35 +12,50 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-@Configuration
-@ComponentScan(basePackages = "br.com.cotiinformatica")
-@EnableWebMvc
-public class MvcConfiguration extends WebMvcConfigurerAdapter {
+import br.com.cotiinformatica.repositories.FuncionarioRepository;
 
-	@Bean
-	public ViewResolver getViewResolver() {
+@Configuration
+@ComponentScan(basePackages="br.com.cotiinformatica")
+@EnableWebMvc
+public class MvcConfiguration extends WebMvcConfigurerAdapter{
+
+	@Bean //método de configuração do Spring
+	public ViewResolver getViewResolver(){
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 		resolver.setPrefix("/WEB-INF/views/");
 		resolver.setSuffix(".jsp");
 		return resolver;
 	}
-
+	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
 
+	/*
+	 * Método de configuração para definir a conexão com o banco de dados
+	 * que será utilizada pelas classes de repositorio por meio do
+	 * Spring JDBC
+	 */
 	@Bean
 	public DataSource getDataSource() {
+		
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-		dataSource.setUrl("jdbc:mysql://localhost:3307/projetoSpringMVC01?useTimezone=true&serverTimezone=UTC&useSSL=false");
+		
+		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+		dataSource.setUrl(
+				"jdbc:mysql://localhost:3307/projetoSpringMVC01?useTimezone=true&serverTimezone=UTC&useSSL=false");
 		dataSource.setUsername("root");
 		dataSource.setPassword("coti");
-
+		
 		return dataSource;
 	}
 	
-	
-
+	/*
+	 * Configurando a classe FuncionarioRepository
+	 */
+	@Bean
+	public FuncionarioRepository getFuncionarioRepository() {
+		return new FuncionarioRepository(getDataSource());
+	}	
 }

@@ -1,5 +1,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -7,6 +10,19 @@
 
 <!-- Referencia para arquivos CSS -->
 <link rel="stylesheet" href="resources/css/bootstrap.min.css" />
+
+<!-- estilo CSS para o jquery validate -->
+<style>	
+	label.error { /* formatar as mensagens de erro do jquery validate */
+		color: #d9534f;
+	}
+	input.error { /* formatar os campos com erro do jquery validate */
+		border: 1px solid #d9534f;
+	}
+	select.error { /* formatar os campos com erro do jquery validate */
+		border: 1px solid #d9534f;
+	}
+</style>
 
 </head>
 <body>
@@ -47,27 +63,44 @@
 			</p>
 		</nav>
 	</div>
+	
+	<c:if test="${not empty mensagem_sucesso}">
+		<!-- mensagem de sucesso -->
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+  			<strong>Sucesso!</strong> ${mensagem_sucesso}
+  			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	</c:if>
+	
+	<c:if test="${not empty mensagem_erro}">
+		<!-- mensagem de erro -->
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  			<strong>Erro!</strong> ${mensagem_erro}
+  			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	</c:if>
+	
 
 	<div class="container mt-4">
 		<h5>Cadastro de Funcionário</h5>
 		<hr/>
 		
-		<form>
+		<form id="formcadastro" action="cadastrarFuncionario" method="post">
 		
 			<div class="row">
 			
 				<div class="col-md-4">
 					
 					<label>Nome do Funcionário:</label>
-					<input type="text" class="form-control" placeholder="Ex: João da Silva"/>
+					<form:input path="dto.nome" name="nome" id="nome" type="text" class="form-control" placeholder="Ex: João da Silva"/>
 					<br/>
 					
 					<label>CPF:</label>
-					<input type="text" class="form-control" placeholder="Ex: 123.456.789-00"/>
+					<form:input path="dto.cpf" name="cpf" id="cpf" type="text" class="form-control" placeholder="Ex: 123.456.789-00"/>
 					<br/>
 					
 					<label>Matrícula:</label>
-					<input type="text" class="form-control" placeholder="Ex: 2021-0001"/>
+					<form:input path="dto.matricula" name="matricula" id="matricula" type="text" class="form-control" placeholder="Ex: 2021-0001"/>
 					<br/>
 
 				</div>
@@ -75,17 +108,17 @@
 				<div class="col-md-4">
 					
 					<label>Data de Admissão:</label>
-					<input type="date" class="form-control"/>
+					<form:input path="dto.dataadmissao" name="dataadmissao" id="dataadmissao" type="date" class="form-control"/>
 					<br/>
 					
 					<label>Situação do Funcionário:</label>
-					<select class="form-select">
-						<option>Escolha uma opção</option>
-						<option>Admitido</option>
-						<option>Férias</option>
-						<option>Afastado</option>
-						<option>Demitido</option>
-					</select>
+					<form:select path="dto.situacao" name="situacao" id="situacao" class="form-select">
+						<option value="">Escolha uma opção</option>
+						<option value="Admitido">Funcionário Admitido</option>
+						<option value="Ferias">Funcionário de Férias</option>
+						<option value="Afastado">Funcionário Afastado</option>
+						<option value="Demitido">Funcionário Demitido</option>
+					</form:select>
 					<br/>
 
 				</div>
@@ -103,12 +136,60 @@
 			</div>
 		
 		</form>
-		
+				
 	</div>
 
 	<!-- Referencia para arquivos JS -->
 	<script src="resources/js/bootstrap.min.js"></script>
+	
+	<!-- Referencia para o JQuery -->
+	<script src="resources/js/jquery-3.6.0.min.js"></script>
+	
+	<!-- Referencia para o JQuery Masked Input -->
+	<script src="resources/js/jquery.maskedinput.min.js"></script>	
+	
+	<!-- Referencias para o JQuery validate -->
+	<script src="resources/js/jquery.validate.min.js"></script>
+	<script src="resources/js/messages_pt_BR.min.js"></script>
+
+	<script>
+		//quando a página for carregada, faça..
+		$(document).ready(function(){ //page load, start..
+			
+			//aplicando máscara nos campos do formulário..
+			$("#cpf").mask("999.999.999-99");
+			$("#matricula").mask("9999-9999");
+			
+			//aplicando validação ao formulário..
+			$("#formcadastro").validate({
+				//regras de validação..
+				rules : {
+					"nome" : {
+						required : true,
+						minlength : 6,
+						maxlength : 150
+					},
+					"cpf" : {
+						required : true
+					},
+					"matricula" : {
+						required : true
+					},
+					"dataadmissao" : {
+						required : true
+					},
+					"situacao" : {
+						required : true
+					}
+				}
+			});
+			
+		})
+	</script>	
 
 </body>
 </html>
+
+
+
 

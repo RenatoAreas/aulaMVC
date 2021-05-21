@@ -2,15 +2,18 @@ package br.com.cotiinformatica.repositories;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import br.com.cotiinformatica.entities.Funcionario;
 import br.com.cotiinformatica.enums.SituacaoFuncionario;
+import br.com.cotiinformatica.helpers.DateHelper;
 import br.com.cotiinformatica.interfaces.IFuncionarioRepository;
 
 public class FuncionarioRepository implements IFuncionarioRepository {
@@ -32,8 +35,13 @@ public class FuncionarioRepository implements IFuncionarioRepository {
 
 		String sql = "insert into funcionario(nome, cpf, matricula, dataadmissao, situacao) values(?,?,?,?,?)";
 
-		Object[] params = { entity.getNome(), entity.getCpf(), entity.getMatricula(), entity.getDataAdmissao(),
-				entity.getSituacao() };
+		Object[] params = { 
+				entity.getNome(), 
+				entity.getCpf(), 
+				entity.getMatricula(), 
+				DateHelper.toString(entity.getDataAdmissao()),
+				entity.getSituacao().toString() 
+			};
 
 		jdbcTemplate.update(sql, params);
 	}
@@ -44,8 +52,14 @@ public class FuncionarioRepository implements IFuncionarioRepository {
 		String sql = "update funcionario set nome = ?, cpf = ?, matricula = ?, dataadmissao = ?, situacao = ? "
 				+ "where idfuncionario = ?";
 
-		Object[] params = { entity.getNome(), entity.getCpf(), entity.getMatricula(), entity.getDataAdmissao(),
-				entity.getSituacao(), entity.getIdFuncionario() };
+		Object[] params = { 
+				entity.getNome(), 
+				entity.getCpf(), 
+				entity.getMatricula(), 
+				DateHelper.toString(entity.getDataAdmissao()),
+				entity.getSituacao().toString(), 
+				entity.getIdFuncionario() 
+			};
 
 		jdbcTemplate.update(sql, params);
 
@@ -65,7 +79,7 @@ public class FuncionarioRepository implements IFuncionarioRepository {
 	@Override
 	public List<Funcionario> findAll() throws Exception {
 
-		String sql = "select * from funcionario";
+		String sql = "select * from funcionario order by nome";
 
 		List<Funcionario> lista = jdbcTemplate.query(sql, new RowMapper<Funcionario>() {
 
@@ -149,11 +163,11 @@ public class FuncionarioRepository implements IFuncionarioRepository {
 	}
 
 	@Override
-	public List<Funcionario> findBySituacao(SituacaoFuncionario situacao) throws Exception {
+	public List<Funcionario> findByDataAdmissao(Date dataInicio, Date dataFim) throws Exception {
 
-		String sql = "select * from funcionario where situacao = ?";
+		String sql = "select * from funcionario where dataadmissao between ? and ? order by dataadmissao";
 
-		Object[] params = { situacao };
+		Object[] params = { DateHelper.toString(dataInicio), DateHelper.toString(dataFim) };
 
 		List<Funcionario> lista = jdbcTemplate.query(sql, params, new RowMapper<Funcionario>() {
 
@@ -184,3 +198,5 @@ public class FuncionarioRepository implements IFuncionarioRepository {
 	}
 
 }
+
+

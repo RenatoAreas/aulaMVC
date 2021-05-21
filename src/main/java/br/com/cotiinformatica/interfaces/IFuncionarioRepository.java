@@ -1,9 +1,11 @@
 package br.com.cotiinformatica.interfaces;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.xml.crypto.Data;
+
 import br.com.cotiinformatica.entities.Funcionario;
-import br.com.cotiinformatica.enums.SituacaoFuncionario;
 
 public interface IFuncionarioRepository extends IBaseRepository<Funcionario>{
 
@@ -12,5 +14,5 @@ public interface IFuncionarioRepository extends IBaseRepository<Funcionario>{
 	
 	Funcionario findByMatricula(String matricula)throws Exception;
 	
-	List<Funcionario> findBySituacao(SituacaoFuncionario situacao) throws Exception;
+	List<Funcionario> findByDataAdmissao(Date dataInicio, Date dataFim) throws Exception;
 }
